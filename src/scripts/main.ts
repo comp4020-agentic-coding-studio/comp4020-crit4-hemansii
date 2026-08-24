@@ -10,31 +10,37 @@ function audioContext(): AudioContext {
 }
 
 // A short, decaying pair of sines reads as a mallet strike rather than a
-// held tone: quick attack, exponential decay, a soft overtone for timbre.
+// held tone: quick attack, exponential decay. A hard hit isn't just louder —
+// it's brighter (more overtone, shorter attack), the way a real mallet
+// strike changes timbre with force, not only volume.
 function strike(freq: number, velocity: number) {
   const audio = audioContext();
   const now = audio.currentTime;
+  const attack = 0.012 - velocity * 0.008;
+  const decay = 0.7 + velocity * 0.4;
+
   const gain = audio.createGain();
   gain.connect(audio.destination);
   gain.gain.setValueAtTime(0, now);
-  gain.gain.linearRampToValueAtTime(velocity, now + 0.005);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.9);
+  gain.gain.linearRampToValueAtTime(0.2 + velocity * 0.8, now + attack);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + decay);
 
   const fundamental = audio.createOscillator();
   fundamental.type = "sine";
   fundamental.frequency.value = freq;
   fundamental.connect(gain);
   fundamental.start(now);
-  fundamental.stop(now + 0.9);
+  fundamental.stop(now + decay);
 
   const overtone = audio.createOscillator();
   overtone.type = "sine";
   overtone.frequency.value = freq * 4;
   const overtoneGain = audio.createGain();
-  overtoneGain.gain.value = 0.15;
+  // Soft hits stay near-pure sine; hard hits get a lot more overtone bite.
+  overtoneGain.gain.value = 0.05 + velocity * 0.55;
   overtone.connect(overtoneGain).connect(gain);
   overtone.start(now);
-  overtone.stop(now + 0.9);
+  overtone.stop(now + decay);
 }
 
 function flash(bar: HTMLButtonElement) {
@@ -45,9 +51,11 @@ function flash(bar: HTMLButtonElement) {
 function hit(bar: HTMLButtonElement, clientY: number) {
   const freq = Number(bar.dataset.freq);
   const rect = bar.getBoundingClientRect();
-  // Higher up the bar = a harder strike = louder.
-  const position = (clientY - rect.top) / rect.height;
-  const velocity = Math.min(1, Math.max(0.35, 1 - position));
+  // Higher up the bar = a harder strike. A wide floor-to-ceiling range plus
+  // a curve (rather than linear) makes soft vs. hard read as distinct hits,
+  // not a barely-different volume tweak.
+  const position = Math.min(1, Math.max(0, (clientY - rect.top) / rect.height));
+  const velocity = Math.pow(Math.min(1, Math.max(0.08, 1 - position)), 0.6);
   strike(freq, velocity);
   flash(bar);
 }

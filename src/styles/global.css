@@ -15,6 +15,25 @@ a {
   color: #0b5fff;
 }
 
+/* A skip-link, not a visible nav bar: useful for keyboard/screen-reader
+   users, invisible for everyone else so it doesn't sit above the page as
+   dead chrome pointing at itself. */
+.skip-link {
+  position: absolute;
+  top: -3rem;
+  left: 1rem;
+  background: #1a1a1a;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 0 0 0.5rem 0.5rem;
+  transition: top 120ms ease-out;
+  z-index: 1;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
 .xylophone {
   display: flex;
   align-items: flex-end;
