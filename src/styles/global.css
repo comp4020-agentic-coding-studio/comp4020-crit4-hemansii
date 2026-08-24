@@ -79,3 +79,36 @@ a {
   pointer-events: none;
   opacity: 0.85;
 }
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.controls button {
+  font: inherit;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  background: #fff;
+  cursor: pointer;
+}
+
+.controls button:disabled {
+  color: #999;
+  cursor: not-allowed;
+}
+
+#record-btn.recording {
+  background: #e02424;
+  border-color: #e02424;
+  color: #fff;
+}
+
+#record-status {
+  color: #555;
+  font-size: 0.9rem;
+}

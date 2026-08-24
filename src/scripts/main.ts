@@ -48,6 +48,32 @@ function flash(bar: HTMLButtonElement) {
   setTimeout(() => bar.classList.remove("struck"), 150);
 }
 
+// Recording captures every played hit — whatever input made it — as
+// (bar index, velocity, offset from recording start), so playback can
+// reproduce exactly what was played without caring how it was played.
+type RecordedHit = { barIndex: number; freq: number; velocity: number; t: number };
+
+let recording = false;
+let recordStart = 0;
+let recordedHits: RecordedHit[] = [];
+let playing = false;
+
+const recordBtn = document.querySelector<HTMLButtonElement>("#record-btn");
+const playBtn = document.querySelector<HTMLButtonElement>("#play-btn");
+const statusEl = document.querySelector<HTMLElement>("#record-status");
+
+function setStatus(text: string) {
+  if (statusEl) statusEl.textContent = text;
+}
+
+function play(bar: HTMLButtonElement, freq: number, velocity: number) {
+  strike(freq, velocity);
+  flash(bar);
+  if (recording) {
+    recordedHits.push({ barIndex: bars.indexOf(bar), freq, velocity, t: performance.now() - recordStart });
+  }
+}
+
 function hit(bar: HTMLButtonElement, clientY: number) {
   const freq = Number(bar.dataset.freq);
   const rect = bar.getBoundingClientRect();
@@ -56,9 +82,57 @@ function hit(bar: HTMLButtonElement, clientY: number) {
   // not a barely-different volume tweak.
   const position = Math.min(1, Math.max(0, (clientY - rect.top) / rect.height));
   const velocity = Math.pow(Math.min(1, Math.max(0.08, 1 - position)), 0.6);
-  strike(freq, velocity);
-  flash(bar);
+  play(bar, freq, velocity);
 }
+
+recordBtn?.addEventListener("click", () => {
+  if (playing) return;
+  if (!recording) {
+    audioContext();
+    recording = true;
+    recordedHits = [];
+    recordStart = performance.now();
+    recordBtn.textContent = "■ Stop";
+    recordBtn.classList.add("recording");
+    if (playBtn) playBtn.disabled = true;
+    setStatus("Recording…");
+  } else {
+    recording = false;
+    recordBtn.textContent = "● Record";
+    recordBtn.classList.remove("recording");
+    if (playBtn) playBtn.disabled = recordedHits.length === 0;
+    setStatus(recordedHits.length > 0 ? `Recorded ${recordedHits.length} hit(s).` : "Nothing recorded — try playing a bar first.");
+  }
+});
+
+playBtn?.addEventListener("click", () => {
+  if (playing || recordedHits.length === 0) return;
+  playing = true;
+  if (recordBtn) recordBtn.disabled = true;
+  playBtn.disabled = true;
+  setStatus("Playing back…");
+
+  for (const recorded of recordedHits) {
+    setTimeout(() => {
+      const bar = bars[recorded.barIndex];
+      if (bar) {
+        strike(recorded.freq, recorded.velocity);
+        flash(bar);
+      }
+    }, recorded.t);
+  }
+
+  const last = recordedHits[recordedHits.length - 1];
+  setTimeout(
+    () => {
+      playing = false;
+      if (recordBtn) recordBtn.disabled = false;
+      playBtn.disabled = false;
+      setStatus(`Recorded ${recordedHits.length} hit(s).`);
+    },
+    last.t + 900,
+  );
+});
 
 // Pointer + drag: covers mouse, touch and pen, and lets a drag across
 // several bars play a glissando run.
