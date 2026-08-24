@@ -56,6 +56,27 @@ keyboard, with velocity and glissando drag as the expressive controls.
   just that `pnpm check` passed
   ([`70eafed`](https://github.com/comp4020-agentic-coding-studio/comp4020-crit4-hemansii/commit/70eafed)).
 
+- **Playtesting found the velocity was there but couldn't be heard.**
+  After shipping the xylophone I played it myself and asked for a second
+  opinion: hitting near the top vs. the bottom of a bar was supposed to feel
+  like a different strike, but it read as a barely-different volume tweak.
+  Rather than just widening the gain range, I made a hard hit change *timbre*
+  too --- more overtone, a shorter attack --- because a real mallet strike
+  isn't only louder when it's harder, it's brighter
+  ([`85a3a86`](https://github.com/comp4020-agentic-coding-studio/comp4020-crit4-hemansii/commit/85a3a86)).
+  The same pass replaced a visible, pointless self-linking "Home" nav with a
+  skip-link that's invisible until focused --- the nav landmark invariant
+  still passes, but there's no dead chrome above the instrument.
+
+- **Making "two players sound different" demonstrable, not just claimed.**
+  That line in the spec is judged by ear at the crit, which means nothing in
+  the repo proves it on its own. I added record/playback: every hit, from
+  any input method, is captured as (bar, velocity, timestamp) and can be
+  replayed exactly. Two people can each record a short run on the same
+  instrument and compare the results directly, rather than the tutor having
+  to take it on trust
+  ([`f95c786`](https://github.com/comp4020-agentic-coding-studio/comp4020-crit4-hemansii/commit/f95c786)).
+
 ## Before you ship
 
 `pnpm check:evidence` verifies your citations resolve to real commits, that a
