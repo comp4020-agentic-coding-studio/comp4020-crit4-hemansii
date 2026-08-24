@@ -66,6 +66,19 @@ function setStatus(text: string) {
   if (statusEl) statusEl.textContent = text;
 }
 
+// The buttons carry an icon span alongside their label, so swap the label
+// text rather than the button's whole contents.
+function setRecordLabel(text: string) {
+  const label = recordBtn?.querySelector(".control-label");
+  if (label) label.textContent = text;
+}
+
+function summary(): string {
+  if (recordedHits.length === 0) return "Nothing recorded yet — play a bar first.";
+  const seconds = (recordedHits[recordedHits.length - 1].t / 1000).toFixed(1);
+  return `${recordedHits.length} notes · ${seconds}s`;
+}
+
 function play(bar: HTMLButtonElement, freq: number, velocity: number) {
   strike(freq, velocity);
   flash(bar);
@@ -74,15 +87,31 @@ function play(bar: HTMLButtonElement, freq: number, velocity: number) {
   }
 }
 
-function hit(bar: HTMLButtonElement, clientY: number) {
-  const freq = Number(bar.dataset.freq);
-  const rect = bar.getBoundingClientRect();
-  // Higher up the bar = a harder strike. A wide floor-to-ceiling range plus
-  // a curve (rather than linear) makes soft vs. hard read as distinct hits,
-  // not a barely-different volume tweak.
-  const position = Math.min(1, Math.max(0, (clientY - rect.top) / rect.height));
+// `along` is 0 at the bar's hard end and 1 at its soft end. A wide
+// floor-to-ceiling range plus a curve makes soft vs. hard read as distinct
+// strikes, not a barely-different volume tweak.
+function strikeBar(bar: HTMLButtonElement, along: number) {
+  const position = Math.min(1, Math.max(0, along));
   const velocity = Math.pow(Math.min(1, Math.max(0.08, 1 - position)), 0.6);
-  play(bar, freq, velocity);
+  play(bar, Number(bar.dataset.freq), velocity);
+}
+
+function hit(bar: HTMLButtonElement, clientX: number, clientY: number) {
+  // On a phone the rack stands on end and the bars run horizontally, so read
+  // whichever axis is actually the bar's length. Either way the far end —
+  // top, or left — is the hard end.
+  const rect = bar.getBoundingClientRect();
+  const along =
+    rect.width > rect.height
+      ? (clientX - rect.left) / rect.width
+      : (clientY - rect.top) / rect.height;
+  strikeBar(bar, along);
+}
+
+// Inputs that carry no strike position of their own (keyboard, or
+// Enter/Space on a focused bar) land a consistent firm hit.
+function hitCentre(bar: HTMLButtonElement) {
+  strikeBar(bar, 0.3);
 }
 
 recordBtn?.addEventListener("click", () => {
@@ -92,16 +121,16 @@ recordBtn?.addEventListener("click", () => {
     recording = true;
     recordedHits = [];
     recordStart = performance.now();
-    recordBtn.textContent = "■ Stop";
+    setRecordLabel("Stop");
     recordBtn.classList.add("recording");
     if (playBtn) playBtn.disabled = true;
     setStatus("Recording…");
   } else {
     recording = false;
-    recordBtn.textContent = "● Record";
+    setRecordLabel("Record");
     recordBtn.classList.remove("recording");
     if (playBtn) playBtn.disabled = recordedHits.length === 0;
-    setStatus(recordedHits.length > 0 ? `Recorded ${recordedHits.length} hit(s).` : "Nothing recorded — try playing a bar first.");
+    setStatus(summary());
   }
 });
 
@@ -128,7 +157,7 @@ playBtn?.addEventListener("click", () => {
       playing = false;
       if (recordBtn) recordBtn.disabled = false;
       playBtn.disabled = false;
-      setStatus(`Recorded ${recordedHits.length} hit(s).`);
+      setStatus(summary());
     },
     last.t + 900,
   );
@@ -147,7 +176,7 @@ xylophone?.addEventListener("pointerdown", (event) => {
   const bar = barAt(event.clientX, event.clientY);
   if (!bar) return;
   (event.target as HTMLElement).releasePointerCapture?.(event.pointerId);
-  hit(bar, event.clientY);
+  hit(bar, event.clientX, event.clientY);
   lastHitByPointer.set(event.pointerId, bar);
 });
 
@@ -155,7 +184,7 @@ xylophone?.addEventListener("pointermove", (event) => {
   if (event.buttons === 0) return;
   const bar = barAt(event.clientX, event.clientY);
   if (!bar || bar === lastHitByPointer.get(event.pointerId)) return;
-  hit(bar, event.clientY);
+  hit(bar, event.clientX, event.clientY);
   lastHitByPointer.set(event.pointerId, bar);
 });
 
@@ -173,8 +202,7 @@ window.addEventListener("keydown", (event) => {
   if (event.repeat) return;
   const bar = barsByKey.get(event.key.toLowerCase());
   if (!bar) return;
-  const rect = bar.getBoundingClientRect();
-  hit(bar, rect.top + rect.height * 0.2);
+  hitCentre(bar);
 });
 
 xylophone?.addEventListener("click", (event) => {
@@ -183,6 +211,5 @@ xylophone?.addEventListener("click", (event) => {
   if (event.detail !== 0) return;
   const bar = (event.target as HTMLElement).closest<HTMLButtonElement>(".bar");
   if (!bar) return;
-  const rect = bar.getBoundingClientRect();
-  hit(bar, rect.top + rect.height * 0.2);
+  hitCentre(bar);
 });

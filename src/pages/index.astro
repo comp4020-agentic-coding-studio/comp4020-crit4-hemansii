@@ -15,6 +15,13 @@ const bars = [
   { note: "G5", freq: 783.991, key: "l" },
   { note: "A5", freq: 880.0, key: ";" },
 ];
+
+// `--t` runs 0 (lowest bar) to 1 (highest), and every graduated dimension —
+// bar length, wood colour, resonator length — is derived from it in CSS.
+const slots = bars.map((bar, i) => ({
+  ...bar,
+  t: bars.length > 1 ? i / (bars.length - 1) : 0,
+}));
 ---
 
 <Layout
@@ -22,34 +29,56 @@ const bars = [
   description="A browser xylophone: click, drag or type across the bars — every note is in key, so nothing you play is wrong."
 >
   <nav aria-label="Primary">
-    <a class="skip-link" href="#xylophone">Skip to the xylophone</a>
+    <a class="skip-link" href="#instrument">Skip to the xylophone</a>
   </nav>
-  <main id="xylophone">
-    <h1>Xylophone</h1>
-    <p data-testid="intro">
-      Click a bar, drag across several, or type the letters printed on
-      them. Every bar shares one scale, so any combination sounds right.
-    </p>
-    <div class="xylophone" role="group" aria-label="Xylophone bars">
-      {
-        bars.map((bar, i) => (
-          <button
-            type="button"
-            class="bar"
-            style={`--i: ${i}; --n: ${bars.length};`}
-            data-note={bar.note}
-            data-freq={bar.freq}
-            aria-label={`Play ${bar.note}`}
-          >
-            <span class="bar-key">{bar.key.toUpperCase()}</span>
-          </button>
-        ))
-      }
+  <main id="instrument">
+    <header class="masthead">
+      <h1>Xylophone</h1>
+      <p class="tagline" data-testid="intro">
+        Ten bars · one scale · no wrong notes
+      </p>
+    </header>
+
+    <div class="stage">
+      <div class="xylophone" role="group" aria-label="Xylophone bars">
+        <div class="bars">
+          {
+            slots.map((slot) => (
+              <div class="slot" style={`--t: ${slot.t.toFixed(4)};`}>
+                <div class="bar-zone">
+                  <button
+                    type="button"
+                    class="bar"
+                    data-note={slot.note}
+                    data-freq={slot.freq}
+                    aria-label={`Play ${slot.note}`}
+                  >
+                    <span class="bar-key">{slot.key.toUpperCase()}</span>
+                  </button>
+                </div>
+                <div class="tube" aria-hidden="true" />
+              </div>
+            ))
+          }
+        </div>
+      </div>
     </div>
+
+    <p class="hint">
+      Strike a bar, drag for a run, or play the letters. Where you hit a bar
+      changes how hard it sounds.
+    </p>
+
     <div class="controls">
-      <button type="button" id="record-btn">● Record</button>
-      <button type="button" id="play-btn" disabled>▶ Play it back</button>
-      <span id="record-status" aria-live="polite"></span>
+      <button type="button" id="record-btn" class="control control-record">
+        <span class="control-dot" aria-hidden="true"></span>
+        <span class="control-label">Record</span>
+      </button>
+      <button type="button" id="play-btn" class="control" disabled>
+        <span class="control-tri" aria-hidden="true"></span>
+        <span class="control-label">Play it back</span>
+      </button>
+      <p id="record-status" class="status" aria-live="polite"></p>
     </div>
   </main>
   <script src="../scripts/main.ts"></script>

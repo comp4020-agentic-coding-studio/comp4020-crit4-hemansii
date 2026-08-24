@@ -1,18 +1,72 @@
+/* A warm concert xylophone: walnut frame, graduated rosewood bars, brass
+   resonators, sitting on warm paper. Everything graduated — bar length,
+   wood tone, resonator length — is derived in CSS from a single `--t` per
+   bar (0 = lowest, 1 = highest) set by the page. */
+
+:root {
+  --paper: #f7f0e2;
+  --paper-deep: #e9dcc4;
+  --ink: #33251a;
+  --ink-soft: #7c6552;
+
+  --walnut: #6b432a;
+  --walnut-dark: #3f2416;
+  --walnut-light: #8d5c3a;
+
+  /* The bar wood ramp: warm rosewood at the low end, pale honey at the top.
+     The low end is kept light enough that the engraved key letters clear
+     WCAG AA (4.85:1) against the darkest bar. */
+  --wood-lo: #bd7838;
+  --wood-hi: #e0aa5c;
+
+  --crimson: #a8392c;
+
+  --serif:
+    "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia,
+    serif;
+  --sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
+  display: flex;
+  min-height: 100dvh;
   margin: 0;
-  padding: 2rem;
-  font-family: system-ui, sans-serif;
+  padding: 2rem 1.25rem;
+  font-family: var(--sans);
   line-height: 1.6;
-  color: #1a1a1a;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(
+      ellipse 80% 50% at 50% 0%,
+      rgb(255 255 255 / 70%),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 60% 45% at 50% 62%,
+      rgb(198 154 92 / 16%),
+      transparent 70%
+    ),
+    linear-gradient(180deg, var(--paper), var(--paper-deep));
+  background-attachment: fixed;
 }
 
 main {
-  max-width: 48rem;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 64rem;
+  /* `margin: auto` centres without the overflow clipping that
+     `justify-content: center` causes when content outgrows the viewport. */
+  margin: auto;
+  text-align: center;
 }
 
 a {
-  color: #0b5fff;
+  color: #8a4a22;
 }
 
 /* A skip-link, not a visible nav bar: useful for keyboard/screen-reader
@@ -22,93 +76,430 @@ a {
   position: absolute;
   top: -3rem;
   left: 1rem;
-  background: #1a1a1a;
-  color: #fff;
+  z-index: 2;
   padding: 0.5rem 1rem;
+  color: var(--paper);
+  background: var(--walnut-dark);
   border-radius: 0 0 0.5rem 0.5rem;
   transition: top 120ms ease-out;
-  z-index: 1;
 }
 
 .skip-link:focus {
   top: 0;
 }
 
-.xylophone {
+/* ---- Masthead ---------------------------------------------------------- */
+
+.masthead {
+  margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+h1 {
+  margin: 0 0 0.35rem;
+  font-family: var(--serif);
+  font-size: clamp(2.4rem, 7vw, 3.75rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+
+.tagline {
+  margin: 0;
+  font-size: clamp(0.7rem, 2vw, 0.78rem);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* ---- The instrument ---------------------------------------------------- */
+
+.stage {
   display: flex;
-  align-items: flex-end;
-  gap: 0.5rem;
-  margin-top: 2rem;
-  padding: 2rem 1rem;
-  background: #1a1a1a;
-  border-radius: 1rem;
+  justify-content: center;
+}
+
+.xylophone {
+  position: relative;
+  width: 100%;
+  /* Narrower than the prose column: real bars are slats, and letting them
+     stretch the full page width makes them read as buttons, not an
+     instrument. */
+  max-width: 48rem;
+  margin-inline: auto;
+  padding: 1.6rem 1.4rem 1.8rem;
+  background-color: var(--walnut);
+  background-image: linear-gradient(
+    180deg,
+    var(--walnut-light),
+    var(--walnut) 22%,
+    var(--walnut-dark)
+  );
+  border-radius: 1.25rem;
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 20%) inset,
+    0 -3px 0 rgb(0 0 0 / 32%) inset,
+    0 22px 45px -14px rgb(58 33 14 / 55%),
+    0 3px 8px -2px rgb(58 33 14 / 35%);
   touch-action: none;
   user-select: none;
 }
 
-.bar {
-  --hue: calc(220 - (var(--i) / max(var(--n) - 1, 1)) * 180);
+/* Grain across the frame. */
+.xylophone::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: repeating-linear-gradient(
+    92deg,
+    rgb(0 0 0 / 6%) 0 2px,
+    rgb(255 255 255 / 3%) 2px 5px,
+    transparent 5px 12px
+  );
+  pointer-events: none;
+}
+
+.bars {
+  --zone: clamp(9rem, 22vw, 16rem);
+
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+}
+
+.slot {
+  display: flex;
   flex: 1 1 0;
-  height: calc(14rem - (var(--i) / max(var(--n) - 1, 1)) * 6rem);
-  border: none;
-  border-radius: 0.5rem;
-  background: hsl(var(--hue) 70% 55%);
-  color: #fff;
-  font: inherit;
-  font-weight: 700;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+
+/* A fixed-height band so bars of different lengths stay centred on a common
+   axis, the way real bars line up on their suspension rails. */
+.bar-zone {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: var(--zone);
+}
+
+.bar {
+  position: relative;
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding-bottom: 0.75rem;
-  cursor: pointer;
+  width: 100%;
+  height: calc(var(--zone) * (1 - var(--t) * 0.42));
+  padding: 0 0 0.72rem;
+  font: inherit;
+  color: inherit;
+  background-color: var(--wood-lo);
+  background-color: color-mix(
+    in oklab,
+    var(--wood-lo),
+    var(--wood-hi) calc(var(--t) * 100%)
+  );
+  background-image:
+    linear-gradient(
+      180deg,
+      rgb(255 255 255 / 26%),
+      rgb(255 255 255 / 0%) 20%,
+      rgb(0 0 0 / 8%) 68%,
+      rgb(0 0 0 / 20%)
+    ),
+    repeating-linear-gradient(
+      88deg,
+      rgb(90 45 10 / 7%) 0 1px,
+      transparent 1px 6px
+    );
+  border: none;
+  border-radius: 0.3rem;
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 35%) inset,
+    0 -1px 0 rgb(0 0 0 / 22%) inset,
+    0 6px 12px -6px rgb(40 20 5 / 70%);
+  cursor:
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"><line x1="9" y1="9" x2="26" y2="26" stroke="%235b3a24" stroke-width="3.5" stroke-linecap="round"/><circle cx="8.5" cy="8.5" r="6.5" fill="%23d59a52" stroke="%235b3a24" stroke-width="1.6"/></svg>')
+      8 8,
+    pointer;
   transition:
     transform 80ms ease-out,
-    filter 80ms ease-out;
+    filter 80ms ease-out,
+    box-shadow 80ms ease-out;
+}
+
+/* The two suspension-cord holes, at the bar's nodal points. */
+.bar::before,
+.bar::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 0.4rem;
+  height: 0.4rem;
+  background: rgb(46 22 8 / 52%);
+  border-radius: 50%;
+  box-shadow: 0 1px 0 rgb(255 255 255 / 22%);
+  translate: -50% 0;
+}
+
+.bar::before {
+  top: 14%;
+}
+
+.bar::after {
+  bottom: 30%;
 }
 
 .bar:hover {
-  filter: brightness(1.1);
+  filter: brightness(1.07);
+}
+
+.bar:focus-visible {
+  outline: 3px solid #ffe8a8;
+  outline-offset: 3px;
 }
 
 .bar.struck {
-  transform: translateY(0.4rem) scaleY(0.96);
-  filter: brightness(1.4);
+  filter: brightness(1.22) saturate(1.08);
+  transform: translateY(3px) scaleY(0.985);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 45%) inset,
+    0 0 22px rgb(255 214 140 / 55%),
+    0 3px 7px -5px rgb(40 20 5 / 70%);
 }
 
 .bar-key {
+  font-family: var(--sans);
+  font-size: clamp(0.7rem, 1.6vw, 0.88rem);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: rgb(46 20 2);
+  text-shadow: 0 1px 0 rgb(255 255 255 / 22%);
   pointer-events: none;
-  opacity: 0.85;
+}
+
+/* Brass resonator tubes: longer under the low notes, stubby under the high. */
+.tube {
+  width: 32%;
+  height: calc(2.2rem + (1 - var(--t)) * 6rem);
+  margin-top: 0.55rem;
+  background: linear-gradient(
+    90deg,
+    #6a5024,
+    #cbae60 28%,
+    #f0dda2 46%,
+    #b3913c 64%,
+    #59441e
+  );
+  border-radius: 0 0 0.28rem 0.28rem;
+  box-shadow: 0 7px 11px -7px rgb(0 0 0 / 70%);
+}
+
+/* ---- Hint + controls --------------------------------------------------- */
+
+.hint {
+  max-width: 44rem;
+  margin: 1.4rem auto 0;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
 }
 
 .controls {
   display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
   align-items: center;
-  gap: 0.75rem;
-  margin-top: 1rem;
+  justify-content: center;
+  margin-top: 1.1rem;
 }
 
-.controls button {
-  font: inherit;
+.control {
+  display: inline-flex;
+  gap: 0.55rem;
+  align-items: center;
+  padding: 0.65rem 1.3rem;
+  font-family: var(--sans);
+  font-size: 0.92rem;
   font-weight: 600;
-  padding: 0.5rem 1rem;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
-  background: #fff;
+  color: var(--ink);
+  background: linear-gradient(180deg, #fffaef, #eddfc4);
+  border: 1px solid rgb(92 58 34 / 30%);
+  border-radius: 999px;
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 90%) inset,
+    0 3px 7px -3px rgb(78 48 22 / 40%);
   cursor: pointer;
+  transition:
+    transform 90ms ease-out,
+    box-shadow 90ms ease-out,
+    background 140ms ease-out;
 }
 
-.controls button:disabled {
-  color: #999;
+.control:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 90%) inset,
+    0 5px 11px -4px rgb(78 48 22 / 45%);
+}
+
+.control:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 70%) inset;
+}
+
+.control:focus-visible {
+  outline: 3px solid var(--walnut-light);
+  outline-offset: 2px;
+}
+
+.control:disabled {
+  color: rgb(124 101 82 / 60%);
+  background: linear-gradient(180deg, #f4ecdd, #e6dac6);
+  box-shadow: none;
   cursor: not-allowed;
 }
 
-#record-btn.recording {
-  background: #e02424;
-  border-color: #e02424;
-  color: #fff;
+.control-dot {
+  width: 0.62rem;
+  height: 0.62rem;
+  background: var(--crimson);
+  border-radius: 50%;
 }
 
-#record-status {
-  color: #555;
-  font-size: 0.9rem;
+.control:disabled .control-dot {
+  background: rgb(124 101 82 / 45%);
+}
+
+.control-tri {
+  width: 0;
+  height: 0;
+  border-top: 0.36rem solid transparent;
+  border-bottom: 0.36rem solid transparent;
+  border-left: 0.6rem solid currentcolor;
+}
+
+.control-record.recording {
+  color: #fff8f0;
+  background: linear-gradient(180deg, #c04a3a, #9a3126);
+  border-color: #86281e;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.control-record.recording .control-dot {
+  background: #fff2ea;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 25%) inset,
+      0 0 0 0 rgb(168 57 44 / 45%);
+  }
+
+  50% {
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 25%) inset,
+      0 0 0 0.5rem rgb(168 57 44 / 0%);
+  }
+}
+
+.status {
+  margin: 0;
+  font-size: 0.86rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+}
+
+/* ---- Phone: stand the instrument on end -------------------------------- */
+
+/* Ten bars across a 390px screen leaves ~33px each — too fine to strike.
+   Rotating the rack turns every bar into a full-width target and keeps the
+   graduated-length silhouette intact. */
+@media (width <= 44rem) {
+  .tagline {
+    letter-spacing: 0.11em;
+  }
+
+  .xylophone {
+    padding: 1.1rem 1.1rem 1.2rem;
+  }
+
+  .bars {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .slot {
+    flex-direction: row;
+    gap: 0.6rem;
+    align-items: center;
+    width: 100%;
+  }
+
+  /* The zone itself carries the graduated length so each resonator sits
+     against the end of its own bar, instead of all of them lining up in a
+     detached column to the right. */
+  .bar-zone {
+    flex: 0 0 calc((100% - 5rem) * (1 - var(--t) * 0.42));
+    height: auto;
+  }
+
+  /* 2.75rem = 44px, the minimum comfortable touch target — worth the space
+     on something you tap repeatedly. */
+  .bar {
+    align-items: center;
+    width: 100%;
+    height: 2.75rem;
+    padding: 0;
+  }
+
+  .bar::before,
+  .bar::after {
+    top: 50%;
+    translate: -50% -50%;
+  }
+
+  .bar::before {
+    top: 50%;
+    left: 15%;
+  }
+
+  .bar::after {
+    top: 50%;
+    right: 15%;
+    bottom: auto;
+    left: auto;
+    translate: 50% -50%;
+  }
+
+  .tube {
+    flex: 0 0 auto;
+    width: calc(1.2rem + (1 - var(--t)) * 3.4rem);
+    height: 0.55rem;
+    margin-top: 0;
+    background: linear-gradient(
+      180deg,
+      #6a5024,
+      #cbae60 28%,
+      #f0dda2 46%,
+      #b3913c 64%,
+      #59441e
+    );
+    border-radius: 0 0.28rem 0.28rem 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
