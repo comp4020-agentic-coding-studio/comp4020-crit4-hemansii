@@ -1,10 +1,25 @@
 ---
 import Layout from "../layouts/Layout.astro";
+
+// Two octaves of C major pentatonic — any combination of these notes sounds
+// musical together, so there's no wrong note to hit.
+const bars = [
+  { note: "C4", freq: 261.626, key: "a" },
+  { note: "D4", freq: 293.665, key: "s" },
+  { note: "E4", freq: 329.628, key: "d" },
+  { note: "G4", freq: 391.995, key: "f" },
+  { note: "A4", freq: 440.0, key: "g" },
+  { note: "C5", freq: 523.251, key: "h" },
+  { note: "D5", freq: 587.33, key: "j" },
+  { note: "E5", freq: 659.255, key: "k" },
+  { note: "G5", freq: 783.991, key: "l" },
+  { note: "A5", freq: 880.0, key: ";" },
+];
 ---
 
 <Layout
-  title="COMP4020 prototype"
-  description="Replace this with one sentence saying what this page is. A search result and a link preview both show it."
+  title="Xylophone"
+  description="A browser xylophone: click, drag or type across the bars — every note is in key, so nothing you play is wrong."
 >
   <header>
     <nav aria-label="Primary">
@@ -12,12 +27,27 @@ import Layout from "../layouts/Layout.astro";
     </nav>
   </header>
   <main>
-    <h1>COMP4020 prototype</h1>
+    <h1>Xylophone</h1>
     <p data-testid="intro">
-      Replace this with your prototype. This week's brief is on the course
-      website; <code>spec/README.md</code> explains how the checks in this repo
-      relate to it.
+      Click a bar, drag across several, or type the letters printed on
+      them. Every bar shares one scale, so any combination sounds right.
     </p>
+    <div class="xylophone" role="group" aria-label="Xylophone bars">
+      {
+        bars.map((bar, i) => (
+          <button
+            type="button"
+            class="bar"
+            style={`--i: ${i}; --n: ${bars.length};`}
+            data-note={bar.note}
+            data-freq={bar.freq}
+            aria-label={`Play ${bar.note}`}
+          >
+            <span class="bar-key">{bar.key.toUpperCase()}</span>
+          </button>
+        ))
+      }
+    </div>
   </main>
   <script src="../scripts/main.ts"></script>
 </Layout>

@@ -7,10 +7,56 @@ body {
 }
 
 main {
-  max-width: 40rem;
+  max-width: 48rem;
   margin: 0 auto;
 }
 
 a {
   color: #0b5fff;
+}
+
+.xylophone {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  padding: 2rem 1rem;
+  background: #1a1a1a;
+  border-radius: 1rem;
+  touch-action: none;
+  user-select: none;
+}
+
+.bar {
+  --hue: calc(220 - (var(--i) / max(var(--n) - 1, 1)) * 180);
+  flex: 1 1 0;
+  height: calc(14rem - (var(--i) / max(var(--n) - 1, 1)) * 6rem);
+  border: none;
+  border-radius: 0.5rem;
+  background: hsl(var(--hue) 70% 55%);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 0.75rem;
+  cursor: pointer;
+  transition:
+    transform 80ms ease-out,
+    filter 80ms ease-out;
+}
+
+.bar:hover {
+  filter: brightness(1.1);
+}
+
+.bar.struck {
+  transform: translateY(0.4rem) scaleY(0.96);
+  filter: brightness(1.4);
+}
+
+.bar-key {
+  pointer-events: none;
+  opacity: 0.85;
 }
