@@ -144,6 +144,17 @@ h1 {
     0 3px 8px -2px rgb(58 33 14 / 35%);
   touch-action: none;
   user-select: none;
+
+  /* A rubber-headed mallet on a birch shaft: a small SOLID ball, no outline
+     ring (a ring plus a stubby handle reads as a magnifying glass), on a
+     long thin shaft. The dark head stays visible against the honey bars and
+     the pale shaft against the dark frame, so it reads on both. Set on the
+     whole rack rather than the bars so it doesn't flicker back to an arrow
+     over the gaps mid-glissando. */
+  cursor:
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><line x1="11.6" y1="11.6" x2="30.4" y2="30.4" stroke="%234a3418" stroke-width="3.8" stroke-linecap="round"/><line x1="11.6" y1="11.6" x2="30.4" y2="30.4" stroke="%23ecd7ae" stroke-width="1.9" stroke-linecap="round"/><circle cx="8.2" cy="8.2" r="4.8" fill="%23222831"/><circle cx="6.7" cy="6.5" r="1.25" fill="%23fff" opacity=".45"/></svg>')
+      8 8,
+    pointer;
 }
 
 /* Grain across the frame. */
@@ -218,14 +229,13 @@ h1 {
     );
   border: none;
   border-radius: 0.3rem;
+  /* A button's UA style is `cursor: default`, which beats inheritance — so
+     without this the mallet shows on the frame but not on the bars. */
+  cursor: inherit;
   box-shadow:
     0 1px 0 rgb(255 255 255 / 35%) inset,
     0 -1px 0 rgb(0 0 0 / 22%) inset,
     0 6px 12px -6px rgb(40 20 5 / 70%);
-  cursor:
-    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"><line x1="9" y1="9" x2="26" y2="26" stroke="%235b3a24" stroke-width="3.5" stroke-linecap="round"/><circle cx="8.5" cy="8.5" r="6.5" fill="%23d59a52" stroke="%235b3a24" stroke-width="1.6"/></svg>')
-      8 8,
-    pointer;
   transition:
     transform 80ms ease-out,
     filter 80ms ease-out,
