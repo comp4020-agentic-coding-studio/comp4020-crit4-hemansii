@@ -103,6 +103,19 @@ keyboard, with velocity and glissando drag as the expressive controls.
   44px touch target. Both are things a green suite and a careful look would
   both have missed.
 
+- **A reviewer's "that looks a bit off" was a real bug, not taste.** Shown a
+  screenshot, my reviewer said the gold resonator tubes "don't look bad, they
+  just don't look the best" --- no diagnosis, just that something was wrong.
+  It would have been easy to treat that as a styling preference and nudge the
+  colour. Measuring instead found the actual defect: each tube hung from the
+  bottom of the fixed bar-zone rather than from the bar above it, so the gap
+  grew as the bars shortened and the top notes' resonators drifted away from
+  theirs. Pulling each tube up by exactly that gap
+  (`--zone * --t * 0.21`) makes every one hang 6px under its own bar, which I
+  confirmed by asserting the measured bar-bottom-to-tube-top distance across
+  all ten slots rather than by looking again
+  ([`f29976f`](https://github.com/comp4020-agentic-coding-studio/comp4020-crit4-hemansii/commit/f29976f)).
+
 ## Before you ship
 
 `pnpm check:evidence` verifies your citations resolve to real commits, that a
