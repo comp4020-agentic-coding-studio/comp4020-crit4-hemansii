@@ -1,9 +1,5 @@
 # Process overview
 
-<!-- TEMPLATE: this file is a shape to fill in, not a form. Replace everything
-     in it with your own overview, and delete this comment — `pnpm
-     check:evidence` will remind you if it's still here. -->
-
 A reading-guide to how the work came together --- a map to your process, not an
 essay about it. Markers read this file and follow its citations; they don't
 trawl the repo for evidence you didn't point at, so if a moment mattered, cite
@@ -17,60 +13,48 @@ cover every deliverable.
 
 ## What I built
 
-One paragraph: the thing, and the idea behind it.
+A browser xylophone for Crit 4 ("An instrument"): ten bars across two octaves
+of C major pentatonic, played live with the Web Audio API by mouse, touch, or
+keyboard, with velocity and glissando drag as the expressive controls.
 
 ## The moments that mattered
 
-Three or four for an assignment; fewer is fine for a weekly prototype. Keep the
-list short so each moment has room to do all four jobs:
+- **The stack conversion script silently dropped the link-preview card.**
+  Running the course `stack` skill's Astro conversion folded `index.html` into
+  a new `Layout.astro`, but the script carried over only `<title>` --- the
+  `meta description` and `og:image` tags were gone, which would have failed
+  the shipped invariants and shipped a bare link preview. Rather than
+  re-running the script or patching it blind, I diffed the pre-conversion
+  `index.html` against the generated `Layout.astro`, found exactly what was
+  missing, and threaded `description`/`card` through as `Layout.astro` props
+  instead of hardcoding them, so every future page gets the same defaults for
+  free. `pnpm check` went from 2 failing invariants to 18/18 green
+  ([`5b665c0`](https://github.com/comp4020-agentic-coding-studio/comp4020-crit4-hemansii/commit/5b665c0)).
 
-1. **what happened** --- the problem, or the thing that went wrong
-2. **what you did instead of the obvious thing** --- the call you made, and why
-   it beat the obvious one
-3. **how you knew it was right** --- the check you ran, the viewport you looked
-   at, what you read before accepting the diff
-4. **the citation** --- a commit or commit range, a `CLAUDE.md` change, a check
-   that went from red to green, a prompt paired with the commit it produced
+- **Choosing what the spec could actually check.** The published spec mixes
+  lines a test can assert ("sound is made live," "playable by mouse, keyboard
+  or touch") with lines only a person can judge at the crit ("expressive,"
+  "a stranger can play it uninstructed," "no way to play it wrong"). Rather
+  than writing a spec test that only pretends to check the judged ones, I
+  wrote `spec/instrument.test.ts` to assert only what's mechanical: that the
+  built JS constructs an `AudioContext` (not a pre-recorded `<audio>`
+  element), and that it wires up both pointer and keyboard handlers. Those
+  tests started red against the still-empty starter page and went green once
+  the xylophone shipped
+  ([`c1b70f5`](https://github.com/comp4020-agentic-coding-studio/comp4020-crit4-hemansii/commit/c1b70f5)
+  red, [`70eafed`](https://github.com/comp4020-agentic-coding-studio/comp4020-crit4-hemansii/commit/70eafed)
+  green).
 
-Jobs 2 and 3 are the ones the repo can't tell a reader on its own, so they're
-where the marks are. The strongest moments are the ones where a correction
-landed in the **harness** --- the standards and checks your work has to satisfy
---- rather than in a retry: a rule added to `CLAUDE.md`, a check wired up, an
-attempt thrown away. Retrying until it passes is the routine case, and changing
-what the work runs against is the skilled one.
-
-Cite each moment as a link whose text is the commit hash or range and whose
-target is this repo's commit or compare URL, so a reader clicks straight to the
-evidence:
-
-- one commit: [`a1b2c3d`](https://github.com/YOUR-ORG/YOUR-REPO/commit/a1b2c3d)
-- a range:
-  [`a1b2c3d...e4f5a6b`](https://github.com/YOUR-ORG/YOUR-REPO/compare/a1b2c3d...e4f5a6b)
-
-To pair a prompt with the commit it produced, quote the prompt (curated, not a
-full transcript) next to the citation:
-
-> the prompt, verbatim
-
-Screenshots are welcome where one carries the verification better than a
-sentence does. Commit the file to this repo and link it with a **relative**
-path, which is what makes it render on GitHub: `![alt text](docs/before.png)`.
-Images don't count towards the word count and don't replace the citation.
-
-### A worked moment, for shape
-
-Delete this section along with the rest of the boilerplate --- it's here to show
-the four jobs in one paragraph, not to be imitated in content.
-
-> The date formatter kept coming back with `toLocaleDateString()` and no locale
-> argument, so the same build rendered differently on my machine and in CI. I'd
-> already re-prompted it twice, which fixed the line but not the habit, so the
-> third time I put the rule in `CLAUDE.md` instead
-> ([`3f9ac21`](https://github.com/YOUR-ORG/YOUR-REPO/commit/3f9ac21)) and added
-> a spec test that fails on a bare `toLocaleDateString`. That's what told me it
-> had actually taken: the test went red against the old code and green against
-> the new, and the next two features it wrote passed it without prompting
-> ([`3f9ac21...b7e0d14`](https://github.com/YOUR-ORG/YOUR-REPO/compare/3f9ac21...b7e0d14)).
+- **Picking a scale, not just an instrument.** The brief's "no way to play it
+  wrong" line is easy to state and easy to miss in practice --- a chromatic
+  keyboard has plenty of wrong-sounding combinations. I chose two octaves of
+  C major pentatonic specifically because *any* combination of its five notes
+  sounds consonant together, which pushes "you can't play it wrong" into the
+  scale itself rather than relying on the player's restraint. I verified the
+  build by driving it headlessly (click, keyboard, and a drag glissando
+  across bars) with Playwright and checking the console stayed clean, not
+  just that `pnpm check` passed
+  ([`70eafed`](https://github.com/comp4020-agentic-coding-studio/comp4020-crit4-hemansii/commit/70eafed)).
 
 ## Before you ship
 
