@@ -327,7 +327,7 @@ h1 {
 /* ---- Hint + controls --------------------------------------------------- */
 
 .hint {
-  max-width: 48rem;
+  max-width: 58rem;
   margin: 1.4rem auto 0;
   font-size: clamp(1rem, 1.4vw, 1.12rem);
   color: var(--ink-soft);
