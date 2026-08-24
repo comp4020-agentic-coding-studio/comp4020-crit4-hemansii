@@ -95,7 +95,7 @@ a {
 }
 
 h1 {
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.9rem;
   font-family: var(--serif);
   font-size: clamp(2.4rem, 7vw, 3.75rem);
   font-weight: 400;
@@ -274,7 +274,7 @@ h1 {
 
 .bar-key {
   font-family: var(--sans);
-  font-size: clamp(0.7rem, 1.6vw, 0.88rem);
+  font-size: clamp(0.95rem, 1.9vw, 1.2rem);
   font-weight: 700;
   letter-spacing: 0.05em;
   color: rgb(46 20 2);
@@ -282,29 +282,42 @@ h1 {
   pointer-events: none;
 }
 
-/* Brass resonator tubes: longer under the low notes, stubby under the high. */
+/* Brass resonator tubes. Each bar has one hanging beneath it, tuned to that
+   bar's pitch — longer under the low notes, stubby under the high.
+
+   The bar is centred in a fixed-height zone, so the gap between the bar's
+   end and the bottom of the zone grows as the bars shorten. Pulling the tube
+   up by exactly that gap (zone x t x 0.21) hangs every tube the same short
+   distance below its OWN bar, instead of leaving the high notes' tubes
+   floating away from theirs. */
 .tube {
-  width: 32%;
+  width: 46%;
   height: calc(2.2rem + (1 - var(--t)) * 6rem);
-  margin-top: 0.55rem;
+  margin-top: calc(0.35rem - var(--zone) * var(--t) * 0.21);
   background: linear-gradient(
     90deg,
-    #6a5024,
-    #cbae60 28%,
-    #f0dda2 46%,
-    #b3913c 64%,
-    #59441e
+    #4f3b15 0%,
+    #856828 11%,
+    #c8ab5e 30%,
+    #f6e8b6 45%,
+    #e0c375 54%,
+    #a5822f 74%,
+    #6a5220 89%,
+    #443212 100%
   );
-  border-radius: 0 0 0.28rem 0.28rem;
-  box-shadow: 0 7px 11px -7px rgb(0 0 0 / 70%);
+  border-radius: 0.12rem 0.12rem 0.55rem 0.55rem;
+  box-shadow:
+    0 -1px 2px rgb(0 0 0 / 45%),
+    0 10px 14px -9px rgb(0 0 0 / 80%),
+    inset 0 -0.7rem 0.7rem -0.6rem rgb(0 0 0 / 55%);
 }
 
 /* ---- Hint + controls --------------------------------------------------- */
 
 .hint {
-  max-width: 44rem;
+  max-width: 48rem;
   margin: 1.4rem auto 0;
-  font-size: 0.92rem;
+  font-size: clamp(1rem, 1.4vw, 1.12rem);
   color: var(--ink-soft);
 }
 
@@ -480,17 +493,20 @@ h1 {
   .tube {
     flex: 0 0 auto;
     width: calc(1.2rem + (1 - var(--t)) * 3.4rem);
-    height: 0.55rem;
+    height: 0.72rem;
     margin-top: 0;
     background: linear-gradient(
       180deg,
-      #6a5024,
-      #cbae60 28%,
-      #f0dda2 46%,
-      #b3913c 64%,
-      #59441e
+      #4f3b15 0%,
+      #856828 11%,
+      #c8ab5e 30%,
+      #f6e8b6 45%,
+      #e0c375 54%,
+      #a5822f 74%,
+      #6a5220 89%,
+      #443212 100%
     );
-    border-radius: 0 0.28rem 0.28rem 0;
+    border-radius: 0.12rem 0.55rem 0.55rem 0.12rem;
   }
 }
 
