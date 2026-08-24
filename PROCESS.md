@@ -77,6 +77,32 @@ keyboard, with velocity and glissando drag as the expressive controls.
   to take it on trust
   ([`f95c786`](https://github.com/comp4020-agentic-coding-studio/comp4020-crit4-hemansii/commit/f95c786)).
 
+- **Designing against the rendered page, not the stylesheet.** The spec asks
+  that "the opening screen invites the first sound," which the starter's
+  plain white page and CSS-rainbow bars plainly didn't. Committing to one
+  direction --- a warm concert xylophone --- let me build real instrument
+  anatomy (walnut frame, graduated bars on a common suspension axis, brass
+  resonators lengthening toward the low notes) instead of decorating a
+  widget. I worked from screenshots of the *built* site at both marking
+  viewports rather than the dev server, which is what caught three things
+  the CSS looked fine for: bars stretched full-width read as buttons rather
+  than slats, the resonators were too stubby to read as tubes at all, and on
+  a 390px phone ten bars left ~33px each --- too fine to strike, so the rack
+  now stands on end with full-width bars
+  ([`b244682`](https://github.com/comp4020-agentic-coding-studio/comp4020-crit4-hemansii/commit/b244682)).
+
+- **Two sensors the checks don't have.** `pnpm check` stayed green through
+  the whole redesign while two real defects sat in the page, so I measured
+  rather than trusted it. Computing contrast ratios directly showed the
+  engraved key letters at 3.05:1 against the darkest bar --- under WCAG AA
+  --- which I fixed by raising the low end of the wood ramp and setting the
+  letters in solid ink, to 4.85:1. And a scripted pass over every input path
+  (click, drag glissando, each keyboard letter, record, playback) tapping
+  `createOscillator` to assert the *frequencies that actually reached the
+  audio graph* caught that the phone bars had landed at 42px, just under the
+  44px touch target. Both are things a green suite and a careful look would
+  both have missed.
+
 ## Before you ship
 
 `pnpm check:evidence` verifies your citations resolve to real commits, that a
