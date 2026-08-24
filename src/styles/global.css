@@ -145,15 +145,17 @@ h1 {
   touch-action: none;
   user-select: none;
 
-  /* A rubber-headed mallet on a birch shaft: a small SOLID ball, no outline
-     ring (a ring plus a stubby handle reads as a magnifying glass), on a
-     long thin shaft. The dark head stays visible against the honey bars and
-     the pale shaft against the dark frame, so it reads on both. Set on the
-     whole rack rather than the bars so it doesn't flicker back to an arrow
-     over the gaps mid-glissando. */
+  /* A rubber-headed mallet on a birch shaft. Two silhouettes to avoid: a
+     ring-outlined circle on a stubby handle is a magnifying glass, and a
+     small head on a long thin stick is a matchstick. What reads as a mallet
+     is a CHUNKY solid ball (here ~23px, against a ~59px bar) on a shaft
+     thick enough to carry it. The dark head stays visible against the honey
+     bars and the pale shaft against the dark frame, so it reads on both.
+     Set on the whole rack rather than the bars so it doesn't flicker back
+     to an arrow over the gaps mid-glissando. */
   cursor:
-    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><line x1="11.6" y1="11.6" x2="30.4" y2="30.4" stroke="%234a3418" stroke-width="3.8" stroke-linecap="round"/><line x1="11.6" y1="11.6" x2="30.4" y2="30.4" stroke="%23ecd7ae" stroke-width="1.9" stroke-linecap="round"/><circle cx="8.2" cy="8.2" r="4.8" fill="%23222831"/><circle cx="6.7" cy="6.5" r="1.25" fill="%23fff" opacity=".45"/></svg>')
-      8 8,
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56"><line x1="22" y1="22" x2="52" y2="52" stroke="%234a3418" stroke-width="7.4" stroke-linecap="round"/><line x1="22" y1="22" x2="52" y2="52" stroke="%23ecd7ae" stroke-width="4.4" stroke-linecap="round"/><circle cx="15" cy="15" r="11.5" fill="%23222831"/><circle cx="11.4" cy="11.2" r="3" fill="%23fff" opacity=".45"/></svg>')
+      15 15,
     pointer;
 }
 
